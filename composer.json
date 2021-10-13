@@ -1,0 +1,14 @@
+{
+    "name": "institutobulla/bulla-lib-php",
+    "description": "Libraries in PHP",
+    "type": "library",
+    "require": {
+        "vlucas/phpdotenv": "^5.3"
+    },
+    "authors": [
+        {
+            "name": "Felipe Alves",
+            "email": "felipe.ci@hotmail.com"
+        }
+    ]
+}

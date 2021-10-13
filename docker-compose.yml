@@ -1,0 +1,33 @@
+version: '3.7'
+services:
+  php:
+    build: .docker/php
+    container_name: "php-srv"
+    image: "php-srv"
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "9000:9000"
+    restart: always
+
+  nginx:
+    image: nginx
+    container_name: "nginx-srv"
+    volumes:
+      - .docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - .:/var/www/html
+    ports:
+      - "80:80"
+    restart: always
+
+  mysql:
+    image: mysql:8.0.20
+    container_name: "mysql-srv"
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./.docker/volumes/mysql:/var/lib/mysql"
