@@ -10,5 +10,14 @@
             "name": "Felipe Alves",
             "email": "felipe.ci@hotmail.com"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "Bulla\\": ""
+        },
+        "exclude-from-classmap": [
+            "/logs/",
+            "/.docker/"
+        ]
+    }
 }
