@@ -15,9 +15,8 @@
         "psr-4": {
             "Bulla\\": "src/"
         },
-        "exclude-from-classmap": [
-            "/logs/",
-            "/.docker/"
+        "classmap": [
+            "src/"
         ]
     }
 }
