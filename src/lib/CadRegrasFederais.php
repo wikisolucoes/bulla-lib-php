@@ -27,7 +27,7 @@ class CadRegrasFederais
 
             $filters = $this->filters;
 
-            $fields = ['id', 'idRegimeTributario', 'codeNcmInicial', 'codeNcmFinal', 'nivel_ncm'];
+            $fields = ['CadRegrasFederais.id', 'idRegimeTributario', 'codeNcmInicial', 'codeNcmFinal', 'nivel_ncm', 'CadCSOSN.id as idCsosn'];
             $where = [];
 
             array_push($where, "idRegimeTributario = " . $filters['idRegimeTributario']);
@@ -41,14 +41,19 @@ class CadRegrasFederais
 
             foreach ($filters as $name => $value) {
                 if (!is_null($value)) {
-                    array_push($fields, $name);
-                    array_push($where, "({$name} = '{$value}' OR {$name} is NULL)");
+                    array_push($fields, "{$this->table}.{$name}");
+                    array_push($where, "({$this->table}.{$name} = '{$value}' OR {$this->table}.{$name} is NULL)");
                 }
             }
 
+            $join = [
+                "JOIN CadCSOSN ON CadCSOSN.codigo_csosn = {$this->table}.cod_csosn",
+            ];
+
             $fields = implode(', ', $fields);
             $where = implode(' AND ', $where);
-            $sql = "SELECT {$fields} FROM {$this->table} WHERE {$where} AND situacao = 'A' ORDER BY nivel_ncm ASC";
+            $join = implode(' ', $join);
+            $sql = "SELECT {$fields} FROM {$this->table} {$join} WHERE {$where} AND {$this->table}.situacao = 'A' ORDER BY nivel_ncm ASC";
             // Output::print_ln("SQL: {$sql}");
             $rows = $this->db->query($sql);
             //Output::print_ln("RESULTADO:");
@@ -133,28 +138,28 @@ class CadRegrasFederais
 
             $validate = new Validation();
 
-            $validate->set('UF', $filters['uf'])->maxLength(2)->isString();
-            $validate->set('Regime Tributário', $filters['idRegimeTributario'])->isInteger()->isRequired();
-            $validate->set('Zona Franca', $filters['zona_franca'])->maxLength(1)->isInteger()->isRequired();
-            $validate->set('NCM Inicial', $filters['codeNcmInicial'])->maxLength(8)->isInteger()->isRequired();
-            $validate->set('NCM Final', $filters['codeNcmFinal'])->maxLength(8)->isInteger()->isRequired();
-            $validate->set('Código CEST', $filters['idCodCest'])->maxLength(11)->isInteger();
-            $validate->set('Lista Comercialização', $filters['idListaComerc'])->maxLength(11)->isInteger();
-            $validate->set('Categoria', $filters['idCategoria'])->maxLength(11)->isInteger();
-            $validate->set('Princípio Ativo', $filters['idPrincAtivo'])->maxLength(11)->isInteger();
-            $validate->set('Tag', $filters['idTag'])->maxLength(11)->isInteger();
-            $validate->set('Fornecedor', $filters['idFornecedor'])->maxLength(11)->isInteger();
-            $validate->set('Fabricante', $filters['idFabricante'])->maxLength(11)->isInteger();
-            $validate->set('Registro MS', $filters['idRegistro'])->maxLength(11)->isInteger();
-            $validate->set('Tipo Lote', $filters['idTipoLote'])->maxLength(11)->isInteger();
-            $validate->set('Produto', $filters['idProduto'])->maxLength(11)->isInteger();
-            $validate->set('Subgrupo Nivel 3', $filters['idSubgrupoNivel3'])->maxLength(11)->isInteger();
-            $validate->set('Subgrupo Nivel 2', $filters['idSubgrupoNivel2'])->maxLength(11)->isInteger();
-            $validate->set('Subgrupo Nivel 1', $filters['idSubgrupoNivel1'])->maxLength(11)->isInteger();
-            $validate->set('Grupo', $filters['idGrupo'])->maxLength(11)->isInteger();
-            $validate->set('Nível NCM', $filters['nivel_ncm'])->maxLength(11)->isInteger();
-            $validate->set('Nome Município', $filters['nome_municipio'])->maxLength(255);
-            $validate->set('IBGE Município', $filters['ibge_municipio'])->maxLength(11)->isInteger();
+            $validate->set('UF', (isset($filters['uf']) ? $filters['uf'] : null))->maxLength(2)->isString();
+            $validate->set('Regime Tributário', (isset($filters['idRegimeTributario']) ? $filters['idRegimeTributario'] : null))->isInteger()->isRequired();
+            $validate->set('Zona Franca', (isset($filters['zona_franca']) ? $filters['zona_franca'] : null))->maxLength(1)->isInteger()->isRequired();
+            $validate->set('NCM Inicial', (isset($filters['codeNcmInicial']) ? $filters['codeNcmInicial'] : null))->maxLength(8)->isInteger()->isRequired();
+            $validate->set('NCM Final', (isset($filters['codeNcmFinal']) ? $filters['codeNcmFinal'] : null))->maxLength(8)->isInteger()->isRequired();
+            $validate->set('Código CEST', (isset($filters['idCodCest']) ? $filters['idCodCest'] : null))->maxLength(11)->isInteger();
+            $validate->set('Lista Comercialização', (isset($filters['idListaComerc']) ? $filters['idListaComerc'] : null))->maxLength(11)->isInteger();
+            $validate->set('Categoria', (isset($filters['idCategoria']) ? $filters['idCategoria'] : null))->maxLength(11)->isInteger();
+            $validate->set('Princípio Ativo', (isset($filters['idPrincAtivo']) ? $filters['idPrincAtivo'] : null))->maxLength(11)->isInteger();
+            $validate->set('Tag', (isset($filters['idTag']) ? $filters['idTag'] : null))->maxLength(11)->isInteger();
+            $validate->set('Fornecedor', (isset($filters['idFornecedor']) ? $filters['idFornecedor'] : null))->maxLength(11)->isInteger();
+            $validate->set('Fabricante', (isset($filters['idFabricante']) ? $filters['idFabricante'] : null))->maxLength(11)->isInteger();
+            $validate->set('Registro MS', (isset($filters['idRegistro']) ? $filters['idRegistro'] : null))->maxLength(11)->isInteger();
+            $validate->set('Tipo Lote', (isset($filters['idTipoLote']) ? $filters['idTipoLote'] : null))->maxLength(11)->isInteger();
+            $validate->set('Produto', (isset($filters['idProduto']) ? $filters['idProduto'] : null))->maxLength(11)->isInteger();
+            $validate->set('Subgrupo Nivel 3', (isset($filters['idSubgrupoNivel3']) ? $filters['idSubgrupoNivel3'] : null))->maxLength(11)->isInteger();
+            $validate->set('Subgrupo Nivel 2', (isset($filters['idSubgrupoNivel2']) ? $filters['idSubgrupoNivel2'] : null))->maxLength(11)->isInteger();
+            $validate->set('Subgrupo Nivel 1', (isset($filters['idSubgrupoNivel1']) ? $filters['idSubgrupoNivel1'] : null))->maxLength(11)->isInteger();
+            $validate->set('Grupo', (isset($filters['idGrupo']) ? $filters['idGrupo'] : null))->maxLength(11)->isInteger();
+            $validate->set('Nível NCM', (isset($filters['nivel_ncm']) ? $filters['nivel_ncm'] : null))->maxLength(11)->isInteger();
+            $validate->set('Nome Município', (isset($filters['nome_municipio']) ? $filters['nome_municipio'] : null))->maxLength(255);
+            $validate->set('IBGE Município', (isset($filters['ibge_municipio']) ? $filters['ibge_municipio'] : null))->maxLength(11)->isInteger();
 
             $validate->validate();
         } catch (Exception $ex) {

@@ -91,11 +91,11 @@ class CadRegrasPreco
 
             $validate = new Validation();
 
-            $validate->set('Código de Barras', $filters['cod_barra'])->maxLength(255)->isString()->isRequired();
-            $validate->set('Tipo Aliquota ICMS', $filters['idTipoAliqIcms'])->maxLength(11)->isInteger()->isRequired();
-            $validate->set('ID Produto', $filters['idProduto'])->maxLength(11)->isInteger();
-            $validate->set('Lista Comercialização', $filters['idListaComerc'])->maxLength(11)->isInteger();
-            $validate->set('Fornecedor de Preço', $filters['idProduto'])->maxLength(11)->isInteger();
+            $validate->set('Código de Barras', (isset($filters['cod_barra']) ? $filters['cod_barra'] : null))->maxLength(255)->isString()->isRequired();
+            $validate->set('Tipo Aliquota ICMS', (isset($filters['idTipoAliqIcms']) ? $filters['idTipoAliqIcms'] : null))->maxLength(11)->isInteger()->isRequired();
+            $validate->set('ID Produto', (isset($filters['idProduto']) ? $filters['idProduto'] : null))->maxLength(11)->isInteger();
+            $validate->set('Lista Comercialização', (isset($filters['idListaComerc']) ? $filters['idListaComerc'] : null))->maxLength(11)->isInteger();
+            $validate->set('Fornecedor de Preço', (isset($filters['idProduto']) ? $filters['idProduto'] : null))->maxLength(11)->isInteger();
 
             $validate->validate();
         } catch (Exception $ex) {
