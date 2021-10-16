@@ -2,7 +2,7 @@
     "name": "wikisolucoes/bulla-lib-php",
     "description": "Libraries in PHP",
     "type": "library",
-    "require": {
+    "require-dev": {
         "vlucas/phpdotenv": "^5.3"
     },
     "authors": [
@@ -14,9 +14,6 @@
     "autoload": {
         "psr-4": {
             "Bulla\\": "src/"
-        },
-        "classmap": [
-            "src/"
-        ]
+        }
     }
 }
