@@ -1,5 +1,5 @@
 {
-    "name": "institutobulla/bulla-lib-php",
+    "name": "wikisolucoes/bulla-lib-php",
     "description": "Libraries in PHP",
     "type": "library",
     "require": {
