@@ -25,18 +25,20 @@ class CadRegrasFederais
         try {
             $this->validateFilters();
 
+            $defaultRegimeTributario = $this->db->row("SELECT * FROM CadRegimeTributario WHERE descricao = 'TODOS'");
+
             $filters = $this->filters;
 
             $fields = ['CadRegrasFederais.id', 'idRegimeTributario', 'codeNcmInicial', 'codeNcmFinal', 'nivel_ncm', 'CadCSOSN.id as idCsosn'];
             $where = [];
 
-            array_push($where, "idRegimeTributario = " . $filters['idRegimeTributario']);
+            array_push($where, "(idRegimeTributario = " . $filters['idRegimeTributario'] . " OR idRegimeTributario = " . $defaultRegimeTributario['id'] . ")");
             unset($filters['idRegimeTributario']);
 
-            array_push($where, "codeNcmInicial >= '" . $filters['codeNcmInicial'] . "'");
+            array_push($where, "codeNcmInicial <= '" . $filters['codeNcmInicial'] . "'");
             unset($filters['codeNcmInicial']);
 
-            array_push($where, "codeNcmFinal <= '" . $filters['codeNcmFinal'] . "'");
+            array_push($where, "codeNcmFinal >= '" . $filters['codeNcmFinal'] . "'");
             unset($filters['codeNcmFinal']);
 
             foreach ($filters as $name => $value) {
@@ -54,7 +56,7 @@ class CadRegrasFederais
             $where = implode(' AND ', $where);
             $join = implode(' ', $join);
             $sql = "SELECT {$fields} FROM {$this->table} {$join} WHERE {$where} AND {$this->table}.situacao = 'A' ORDER BY nivel_ncm ASC";
-            // Output::print_ln("SQL: {$sql}");
+            //\Bulla\Helper\Output::print_log("SQL: {$sql}", "[database]");
             $rows = $this->db->query($sql);
             //Output::print_ln("RESULTADO:");
             //Output::print_array($rows);
@@ -79,7 +81,15 @@ class CadRegrasFederais
                 throw new Exception('ID da regra não informado!');
             }
 
-            $regra = $this->db->row("SELECT * FROM {$this->table} WHERE id = :id", ['id' => $id], PDO::FETCH_OBJ);
+            $fields = implode(', ', [
+                'CadRegrasFederais.*', 'CadCSOSN.id as idCsosn',
+            ]);
+
+            $join = implode(' ', [
+                "JOIN CadCSOSN ON CadCSOSN.codigo_csosn = {$this->table}.cod_csosn",
+            ]);
+
+            $regra = $this->db->row("SELECT {$fields} FROM {$this->table} {$join} WHERE {$this->table}.id = :id", ['id' => $id], PDO::FETCH_OBJ);
 
             if (isset($regra->id)) {
                 return $regra;

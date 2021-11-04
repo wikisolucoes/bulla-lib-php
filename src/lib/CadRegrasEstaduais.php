@@ -25,19 +25,21 @@ class CadRegrasEstaduais
         try {
             $this->validateFilters();
 
+            $defaultRegimeTributario = $this->db->row("SELECT * FROM CadRegimeTributario WHERE descricao = 'TODOS'");
+
             $filters = $this->filters;
 
             $fields = ['CadRegrasEstaduais.id', 'idRegimeTributario', 'codeNcmInicial', 'codeNcmFinal', 'nivel_ncm', 'CadRegrasEstaduais.situacao',
                 'CadCodCstIcms.id as idCstIcms', 'CadTiposAliqIcms.aliquota_padrao', 'CadModalidadeBaseICMS.descricao as mod_base_calc'];
             $where = [];
 
-            array_push($where, "idRegimeTributario = " . $filters['idRegimeTributario']);
+            array_push($where, "(idRegimeTributario = " . $filters['idRegimeTributario'] . " OR idRegimeTributario = " . $defaultRegimeTributario['id'] . ")");
             unset($filters['idRegimeTributario']);
 
-            array_push($where, "codeNcmInicial >= '" . $filters['codeNcmInicial'] . "'");
+            array_push($where, "codeNcmInicial <= '" . $filters['codeNcmInicial'] . "'");
             unset($filters['codeNcmInicial']);
 
-            array_push($where, "codeNcmFinal <= '" . $filters['codeNcmFinal'] . "'");
+            array_push($where, "codeNcmFinal >= '" . $filters['codeNcmFinal'] . "'");
             unset($filters['codeNcmFinal']);
 
             foreach ($filters as $name => $value) {
@@ -57,7 +59,7 @@ class CadRegrasEstaduais
             $where = implode(' AND ', $where);
             $join = implode(' ', $join);
             $sql = "SELECT {$fields} FROM {$this->table} {$join} WHERE {$where} AND {$this->table}.situacao = 'A' ORDER BY nivel_ncm ASC";
-            // Output::print_ln("SQL: {$sql}");
+            //\Bulla\Helper\Output::print_log("SQL: {$sql}", "[database]");
             $rows = $this->db->query($sql);
             //Output::print_ln("RESULTADO:");
             //Output::print_array($rows);
@@ -81,7 +83,18 @@ class CadRegrasEstaduais
                 throw new Exception('ID da regra não informado!');
             }
 
-            $regra = $this->db->row("SELECT * FROM {$this->table} WHERE id = :id", ['id' => $id], PDO::FETCH_OBJ);
+            $fields = implode(', ', [
+                'CadRegrasEstaduais.*', 'CadCodCstIcms.id as idCstIcms',
+                'CadTiposAliqIcms.aliquota_padrao as idAliqDife', 'CadTiposAliqIcms.id as idAliqDifeciad', 'CadModalidadeBaseICMS.descricao as mod_base_cal',
+            ]);
+
+            $join = implode(' ', [
+                "JOIN CadCodCstIcms ON CadCodCstIcms.id = {$this->table}.idCodCstIcms",
+                "JOIN CadTiposAliqIcms ON CadTiposAliqIcms.id = {$this->table}.idTipoAliqIcms",
+                "JOIN CadModalidadeBaseICMS ON CadModalidadeBaseICMS.id = {$this->table}.idModBaseIcms",
+            ]);
+
+            $regra = $this->db->row("SELECT {$fields} FROM {$this->table} {$join} WHERE {$this->table}.id = :id", ['id' => $id], PDO::FETCH_OBJ);
 
             if (isset($regra->id)) {
                 return $regra;
