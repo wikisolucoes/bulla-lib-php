@@ -3,7 +3,8 @@
     "description": "Libraries in PHP",
     "type": "library",
     "require-dev": {
-        "vlucas/phpdotenv": "^5.3"
+        "vlucas/phpdotenv": "^5.3",
+        "php-curl-class/php-curl-class": "^9.4"
     },
     "authors": [
         {

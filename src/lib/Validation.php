@@ -270,7 +270,7 @@ class Validation
      */
     public function isEmail()
     {
-        if (filter_var($this->_data['value'], FILTER_VALIDATE_EMAIL) === false) {
+        if (strlen($this->_data['value']) && filter_var($this->_data['value'], FILTER_VALIDATE_EMAIL) === false) {
             $this->setError(sprintf($this->_messages['isEmail'], $this->_data['value']));
         }
         return $this;
@@ -283,7 +283,7 @@ class Validation
      */
     public function isUrl()
     {
-        if (filter_var($this->_data['value'], FILTER_VALIDATE_URL) === false) {
+        if (strlen($this->_data['value']) && filter_var($this->_data['value'], FILTER_VALIDATE_URL) === false) {
             $this->setError(sprintf($this->_messages['isUrl'], $this->_data['value']));
         }
         return $this;
@@ -320,7 +320,7 @@ class Validation
      */
     public function isNum()
     {
-        if (!is_numeric($this->_data['value'])) {
+        if (strlen($this->_data['value']) && !is_numeric($this->_data['value'])) {
             $this->setError(sprintf($this->_messages['isNum'], $this->_data['value'], $this->_data['name']));
         }
         return $this;
@@ -333,7 +333,7 @@ class Validation
      */
     public function isInteger()
     {
-        if (!is_numeric($this->_data['value']) && (int) $this->_data['value'] != $this->_data['value']) {
+        if (strlen($this->_data['value']) && !is_numeric($this->_data['value']) && (int) $this->_data['value'] != $this->_data['value']) {
             $this->setError(sprintf($this->_messages['isInteger'], $this->_data['value'], $this->_data['name']));
         }
         return $this;
@@ -346,7 +346,7 @@ class Validation
      */
     public function isFloat()
     {
-        if (!is_float(filter_var($this->_data['value'], FILTER_VALIDATE_FLOAT))) {
+        if (strlen($this->_data['value']) && !is_float(filter_var($this->_data['value'], FILTER_VALIDATE_FLOAT))) {
             $this->setError(sprintf($this->_messages['isFloat'], $this->_data['value'], $this->_data['name']));
         }
         return $this;
@@ -359,7 +359,7 @@ class Validation
      */
     public function isString()
     {
-        if (!is_string($this->_data['value'])) {
+        if (strlen($this->_data['value']) && !is_string($this->_data['value'])) {
             $this->setError(sprintf($this->_messages['isString'], $this->_data['value'], $this->_data['name']));
         }
         return $this;
@@ -372,7 +372,7 @@ class Validation
      */
     public function isBoolean()
     {
-        if (!is_bool($this->_data['value'])) {
+        if (strlen($this->_data['value']) && !is_bool($this->_data['value'])) {
             $this->setError(sprintf($this->_messages['isBoolean'], $this->_data['value'], $this->_data['name']));
         }
         return $this;
