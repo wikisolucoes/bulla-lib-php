@@ -70,7 +70,7 @@ class Webhooks extends Auth
 
             $validate->set('url', ($webhook['url'] ?? null))->maxLength(255)->isString(); //URL do Webhook.
 
-            if (count($webhook['events'] ?? null)) {
+            if (count($webhook['events'] ?? [])) {
                 foreach ($webhook['events'] as $k => $event) {
                     $validate->set('events', $event)->maxLength(255)->isString(); //Array de eventos a serem ativados.
                 }

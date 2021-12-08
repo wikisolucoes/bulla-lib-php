@@ -298,34 +298,36 @@ class CobrancaAvulsa extends Auth
             $validate->set('payedOutsideGalaxPay', ($charge['payedOutsideGalaxPay'] ?? null))->isBoolean(); //Define se a cobrança foi paga fora do sistema do Galax Pay.
             $validate->set('mainPaymentMethodId', ($charge['mainPaymentMethodId'] ?? null))->maxLength(30)->isString(); //PaymentMethod.id => Id do pagamento principal.
 
-            $validate->set('Customer.myId', ($charge['Customer']['myId'] ?? null))->maxLength(8)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
+            $validate->set('Customer.myId', ($charge['Customer']['myId'] ?? null))->maxLength(255)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
             $validate->set('Customer.name', ($charge['Customer']['name'] ?? null))->maxLength(255)->isString()->isRequired(); //Nome ou razão social do cliente.
             $validate->set('Customer.document', ($charge['Customer']['document'] ?? null))->maxLength(255)->isString()->isRequired(); //CPF OU CNPJ do cliente. Apenas números.
-            $validate->set('Customer.invoiceHoldIss', ($charge['Customer']['invoiceHoldIss'] ?? null))->maxLength(255)->isString()->isRequired(); //Se reterá ISS na nota fiscal ou não.
-            $validate->set('Customer.municipalDocument', ($charge['Customer']['municipalDocument'] ?? null))->maxLength(2)->isString()->isRequired(); //Inscrição municipal do cliente.
+            $validate->set('Customer.invoiceHoldIss', ($charge['Customer']['invoiceHoldIss'] ?? null))->maxLength(255)->isString(); //Se reterá ISS na nota fiscal ou não.
+            $validate->set('Customer.municipalDocument', ($charge['Customer']['municipalDocument'] ?? null))->maxLength(255)->isString(); //Inscrição municipal do cliente.
 
             $validate->set('Customer.emails', ($charge['Customer']['emails'] ?? null))->isArray()->isRequired();
-            if (count($charge['Customer']['emails'] ?? null)) {
+            if (count($charge['Customer']['emails'] ?? [])) {
                 foreach ($charge['Customer']['emails'] as $k => $email) {
                     $validate->set('Customer.email', $email)->maxLength(255)->isString()->isRequired(); //Emails do cliente.
                 }
             }
 
-            if (count($charge['Customer']['phones'] ?? null)) {
+            if (count($charge['Customer']['phones'] ?? [])) {
                 foreach ($charge['Customer']['phones'] as $k => $phone) {
                     $validate->set('Customer.phone', $phone)->maxLength(11)->isInteger(); //Telefones do cliente.
                 }
             }
 
-            $validate->set('Customer.Address.zipCode', ($charge['Customer']['Address']['zipCode'] ?? null))->maxLength(8)->isString()->isRequired(); //CEP. Informe apenas números.
-            $validate->set('Customer.Address.street', ($charge['Customer']['Address']['street'] ?? null))->maxLength(255)->isString()->isRequired(); //Logradouro.
-            $validate->set('Customer.Address.number', ($charge['Customer']['Address']['number'] ?? null))->maxLength(255)->isString()->isRequired(); //Número.
-            $validate->set('Customer.Address.complement', ($charge['Customer']['Address']['complement'] ?? null))->maxLength(255)->isString(); //Complemento.
-            $validate->set('Customer.Address.neighborhood', ($charge['Customer']['Address']['neighborhood'] ?? null))->maxLength(255)->isString()->isRequired(); //Bairro.
-            $validate->set('Customer.Address.city', ($charge['Customer']['Address']['city'] ?? null))->maxLength(255)->isString()->isRequired(); //Cidade.
-            $validate->set('Customer.Address.state', ($charge['Customer']['Address']['state'] ?? null))->maxLength(2)->isString()->isRequired(); //Estado.
+            if (count(($charge['Customer']['Address'] ?? []))) {
+                $validate->set('Customer.Address.zipCode', ($charge['Customer']['Address']['zipCode'] ?? null))->maxLength(8)->isString()->isRequired(); //CEP. Informe apenas números.
+                $validate->set('Customer.Address.street', ($charge['Customer']['Address']['street'] ?? null))->maxLength(255)->isString()->isRequired(); //Logradouro.
+                $validate->set('Customer.Address.number', ($charge['Customer']['Address']['number'] ?? null))->maxLength(255)->isString()->isRequired(); //Número.
+                $validate->set('Customer.Address.complement', ($charge['Customer']['Address']['complement'] ?? null))->maxLength(255)->isString(); //Complemento.
+                $validate->set('Customer.Address.neighborhood', ($charge['Customer']['Address']['neighborhood'] ?? null))->maxLength(255)->isString()->isRequired(); //Bairro.
+                $validate->set('Customer.Address.city', ($charge['Customer']['Address']['city'] ?? null))->maxLength(255)->isString()->isRequired(); //Cidade.
+                $validate->set('Customer.Address.state', ($charge['Customer']['Address']['state'] ?? null))->maxLength(2)->isString()->isRequired(); //Estado.
+            }
 
-            if (count($charge['PaymentMethodCreditCard'] ?? null)) {
+            if (count($charge['PaymentMethodCreditCard'] ?? [])) {
                 $validate->set('PaymentMethodCreditCard.Card.myId', ($charge['PaymentMethodCreditCard']['Card']['myId'] ?? null))->maxLength(255)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
                 $validate->set('PaymentMethodCreditCard.Card.number', ($charge['PaymentMethodCreditCard']['Card']['number'] ?? null))->maxLength(30)->isString()->isRequired(); //Número do cartão.
                 $validate->set('PaymentMethodCreditCard.Card.holder', ($charge['PaymentMethodCreditCard']['Card']['holder'] ?? null))->maxLength(30)->isString()->isRequired(); //Nome do portador.
@@ -343,7 +345,7 @@ class CobrancaAvulsa extends Auth
                 $validate->set('PaymentMethodCreditCard.qtdInstallments', ($charge['PaymentMethodCreditCard']['qtdInstallments'] ?? null))->maxLength(11)->isInteger(); //Caso enviado como true a transação não será capturada automaticamente na operadora.
             }
 
-            if (count($charge['PaymentMethodBoleto'] ?? null)) {
+            if (count($charge['PaymentMethodBoleto'] ?? [])) {
                 $validate->set('PaymentMethodBoleto.fine', ($charge['PaymentMethodBoleto']['fine'] ?? null))->maxLength(11)->isInteger(); //Percentual de multa, com dois decimais sem o separador.
                 $validate->set('PaymentMethodBoleto.interest', ($charge['PaymentMethodBoleto']['interest'] ?? null))->maxLength(11)->isInteger(); //Percentual de juros, com dois decimais sem o separador.
                 $validate->set('PaymentMethodBoleto.instructions', ($charge['PaymentMethodBoleto']['instructions'] ?? null))->maxLength(255)->isString(); //Instruções do boleto.
@@ -354,7 +356,7 @@ class CobrancaAvulsa extends Auth
                 $validate->set('PaymentMethodBoleto.Discount.value', ($charge['PaymentMethodBoleto']['Discount']['value'] ?? null))->maxLength(11)->isInteger()->isRequired(); //Valor do desconto em centavos.
             }
 
-            if (count($charge['PaymentMethodPix'] ?? null)) {
+            if (count($charge['PaymentMethodPix'] ?? [])) {
                 $validate->set('PaymentMethodPix.fine', ($charge['PaymentMethodPix']['fine'] ?? null))->maxLength(11)->isInteger(); //Percentual de multa, com dois decimais sem o separador.
                 $validate->set('PaymentMethodPix.interest', ($charge['PaymentMethodPix']['interest'] ?? null))->maxLength(11)->isInteger(); //Percentual de juros, com dois decimais sem o separador.
                 $validate->set('PaymentMethodPix.instructions', ($charge['PaymentMethodPix']['instructions'] ?? null))->maxLength(255)->isString(); //Instruções do QR Code Pix.
@@ -367,7 +369,7 @@ class CobrancaAvulsa extends Auth
                 $validate->set('PaymentMethodPix.Discount.value', ($charge['PaymentMethodPix']['Discount']['value'] ?? null))->maxLength(11)->isInteger()->isRequired(); //Valor do desconto em centavos.
             }
 
-            if (count($charge['InvoiceConfig'] ?? null)) {
+            if (count($charge['InvoiceConfig'] ?? [])) {
                 $validate->set('InvoiceConfig.description', ($charge['InvoiceConfig']['description'] ?? null))->isString()->isRequired(); //Descrição da nota fiscal.
                 $validate->set('InvoiceConfig.type', ($charge['InvoiceConfig']['type'] ?? null))->maxLength(255)->isString()->isRequired(); //Define se a emissão será uma por transação ou uma para a assinatura toda. [onePerTransaction]
                 $validate->set('InvoiceConfig.createOn', ($charge['InvoiceConfig']['createOn'] ?? null))->maxLength(255)->isString()->isRequired(); //Define o momento que a nota fiscal será gerada.

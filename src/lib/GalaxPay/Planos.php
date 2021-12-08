@@ -193,7 +193,7 @@ class Planos extends Auth
             $validate->set('additionalInfo', ($plan['additionalInfo'] ?? null))->isString(); //Texto livre dedicado a informações adicionais internas.
 
             $validate->set('PlanPrices', ($plan['prices'] ?? null))->isArray()->isRequired();
-            if (count($plan['prices'] ?? null)) {
+            if (count($plan['prices'] ?? [])) {
                 foreach ($plan['prices'] as $k => $price) {
                     $validate->set('PlanPrices.payment', ($price['payment'] ?? null))->maxLength(30)->isString()->isRequired(); //PaymentMethod.id => Id do pagamento
                     $validate->set('PlanPrices.value', ($price['value'] ?? null))->maxLength(11)->isInteger()->isRequired(); //Preço em centavos.

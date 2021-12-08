@@ -201,13 +201,13 @@ class Clientes extends Auth
             $validate->set('Address.state', ($customer['Address']['state'] ?? null))->maxLength(2)->isString()->isRequired(); //Estado.
 
             $validate->set('Emails', ($customer['emails'] ?? null))->isArray()->isRequired();
-            if (count($customer['emails'] ?? null)) {
+            if (count($customer['emails'] ?? [])) {
                 foreach ($customer['emails'] as $k => $email) {
                     $validate->set('emails', $email)->maxLength(255)->isString()->isRequired(); //Emails do cliente.
                 }
             }
 
-            if (count($customer['phones'] ?? null)) {
+            if (count($customer['phones'] ?? [])) {
                 foreach ($customer['phones'] as $k => $phone) {
                     $validate->set('phones', $phone)->maxLength(11)->isInteger(); //Telefones do cliente.
                 }
