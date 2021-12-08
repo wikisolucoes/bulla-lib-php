@@ -163,7 +163,9 @@ class Validation
      */
     public function isRequired()
     {
-        if (!strlen($this->_data['value'])) {
+        if ((is_array($this->_data['value']) && !count($this->_data['value']))) {
+            $this->setError(sprintf($this->_messages['isRequired'], $this->_data['name']));
+        } else if (!is_array($this->_data['value']) && !strlen($this->_data['value'])) {
             $this->setError(sprintf($this->_messages['isRequired'], $this->_data['name']));
         }
         return $this;
