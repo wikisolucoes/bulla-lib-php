@@ -2,6 +2,9 @@
     "name": "wikisolucoes/bulla-lib-php",
     "description": "Libraries in PHP",
     "type": "library",
+    "require": {
+        "php-curl-class/php-curl-class": "^9.4"
+    },
     "require-dev": {
         "vlucas/phpdotenv": "^5.3",
         "php-curl-class/php-curl-class": "^9.4"
