@@ -291,83 +291,88 @@ class CobrancaAvulsa extends Auth
         try {
             $validate = new Validation();
 
-            $validate->set('myId', $charge['myId'])->maxLength(255)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
-            $validate->set('value', $charge['value'])->maxLength(11)->isInteger()->isRequired(); //Preço em centavos.
-            $validate->set('additionalInfo', $charge['additionalInfo'])->isString(); //Texto livre dedicado a informações adicionais internas.
-            $validate->set('payday', $charge['payday'])->maxLength(10)->isString(); //Data de vencimento do pagamento.
-            $validate->set('payedOutsideGalaxPay', $charge['payedOutsideGalaxPay'])->isBoolean(); //Define se a cobrança foi paga fora do sistema do Galax Pay.
-            $validate->set('mainPaymentMethodId', $charge['mainPaymentMethodId'])->maxLength(30)->isString(); //PaymentMethod.id => Id do pagamento principal.
+            $validate->set('myId', ($charge['myId'] ?? null))->maxLength(255)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
+            $validate->set('value', ($charge['value'] ?? null))->maxLength(11)->isInteger()->isRequired(); //Preço em centavos.
+            $validate->set('additionalInfo', ($charge['additionalInfo'] ?? null))->isString(); //Texto livre dedicado a informações adicionais internas.
+            $validate->set('payday', ($charge['payday'] ?? null))->maxLength(10)->isString(); //Data de vencimento do pagamento.
+            $validate->set('payedOutsideGalaxPay', ($charge['payedOutsideGalaxPay'] ?? null))->isBoolean(); //Define se a cobrança foi paga fora do sistema do Galax Pay.
+            $validate->set('mainPaymentMethodId', ($charge['mainPaymentMethodId'] ?? null))->maxLength(30)->isString(); //PaymentMethod.id => Id do pagamento principal.
 
-            $validate->set('Customer.myId', $charge['Customer']['myId'])->maxLength(8)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
-            $validate->set('Customer.name', $charge['Customer']['name'])->maxLength(255)->isString()->isRequired(); //Nome ou razão social do cliente.
-            $validate->set('Customer.document', $charge['Customer']['document'])->maxLength(255)->isString()->isRequired(); //CPF OU CNPJ do cliente. Apenas números.
-            $validate->set('Customer.invoiceHoldIss', $charge['Customer']['invoiceHoldIss'])->maxLength(255)->isString()->isRequired(); //Se reterá ISS na nota fiscal ou não.
-            $validate->set('Customer.municipalDocument', $charge['Customer']['municipalDocument'])->maxLength(2)->isString()->isRequired(); //Inscrição municipal do cliente.
+            $validate->set('Customer.myId', ($charge['Customer']['myId'] ?? null))->maxLength(8)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
+            $validate->set('Customer.name', ($charge['Customer']['name'] ?? null))->maxLength(255)->isString()->isRequired(); //Nome ou razão social do cliente.
+            $validate->set('Customer.document', ($charge['Customer']['document'] ?? null))->maxLength(255)->isString()->isRequired(); //CPF OU CNPJ do cliente. Apenas números.
+            $validate->set('Customer.invoiceHoldIss', ($charge['Customer']['invoiceHoldIss'] ?? null))->maxLength(255)->isString()->isRequired(); //Se reterá ISS na nota fiscal ou não.
+            $validate->set('Customer.municipalDocument', ($charge['Customer']['municipalDocument'] ?? null))->maxLength(2)->isString()->isRequired(); //Inscrição municipal do cliente.
 
-            foreach ($charge['Customer']['emails'] as $k => $email) {
-                $validate->set('emails', $email)->maxLength(255)->isString()->isRequired(); //Emails do cliente.
+            $validate->set('Customer.emails', ($charge['Customer']['emails'] ?? null))->isArray()->isRequired();
+            if (count($charge['Customer']['emails'] ?? null)) {
+                foreach ($charge['Customer']['emails'] as $k => $email) {
+                    $validate->set('Customer.email', $email)->maxLength(255)->isString()->isRequired(); //Emails do cliente.
+                }
             }
 
-            foreach ($charge['Customer']['phones'] as $k => $phone) {
-                $validate->set('phones', $phone)->maxLength(11)->isInteger(); //Telefones do cliente.
+            if (count($charge['Customer']['phones'] ?? null)) {
+                foreach ($charge['Customer']['phones'] as $k => $phone) {
+                    $validate->set('Customer.phone', $phone)->maxLength(11)->isInteger(); //Telefones do cliente.
+                }
             }
 
-            $validate->set('Customer.Address.zipCode', $charge['Customer']['Address']['zipCode'])->maxLength(8)->isString()->isRequired(); //CEP. Informe apenas números.
-            $validate->set('Customer.Address.street', $charge['Customer']['Address']['street'])->maxLength(255)->isString()->isRequired(); //Logradouro.
-            $validate->set('Customer.Address.number', $charge['Customer']['Address']['number'])->maxLength(255)->isString()->isRequired(); //Número.
-            $validate->set('Customer.Address.complement', $charge['Customer']['Address']['complement'])->maxLength(255)->isString(); //Complemento.
-            $validate->set('Customer.Address.neighborhood', $charge['Customer']['Address']['neighborhood'])->maxLength(255)->isString()->isRequired(); //Bairro.
-            $validate->set('Customer.Address.city', $charge['Customer']['Address']['city'])->maxLength(255)->isString()->isRequired(); //Cidade.
-            $validate->set('Customer.Address.state', $charge['Customer']['Address']['state'])->maxLength(2)->isString()->isRequired(); //Estado.
+            $validate->set('Customer.Address.zipCode', ($charge['Customer']['Address']['zipCode'] ?? null))->maxLength(8)->isString()->isRequired(); //CEP. Informe apenas números.
+            $validate->set('Customer.Address.street', ($charge['Customer']['Address']['street'] ?? null))->maxLength(255)->isString()->isRequired(); //Logradouro.
+            $validate->set('Customer.Address.number', ($charge['Customer']['Address']['number'] ?? null))->maxLength(255)->isString()->isRequired(); //Número.
+            $validate->set('Customer.Address.complement', ($charge['Customer']['Address']['complement'] ?? null))->maxLength(255)->isString(); //Complemento.
+            $validate->set('Customer.Address.neighborhood', ($charge['Customer']['Address']['neighborhood'] ?? null))->maxLength(255)->isString()->isRequired(); //Bairro.
+            $validate->set('Customer.Address.city', ($charge['Customer']['Address']['city'] ?? null))->maxLength(255)->isString()->isRequired(); //Cidade.
+            $validate->set('Customer.Address.state', ($charge['Customer']['Address']['state'] ?? null))->maxLength(2)->isString()->isRequired(); //Estado.
 
-            if (count($charge['PaymentMethodCreditCard'])) {
-                $validate->set('PaymentMethodCreditCard.Card.myId', $charge['PaymentMethodCreditCard']['Card']['myId'])->maxLength(255)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
-                $validate->set('PaymentMethodCreditCard.Card.number', $charge['PaymentMethodCreditCard']['Card']['number'])->maxLength(30)->isString()->isRequired(); //Número do cartão.
-                $validate->set('PaymentMethodCreditCard.Card.holder', $charge['PaymentMethodCreditCard']['Card']['holder'])->maxLength(30)->isString()->isRequired(); //Nome do portador.
-                $validate->set('PaymentMethodCreditCard.Card.expiresAt', $charge['PaymentMethodCreditCard']['Card']['expiresAt'])->maxLength(7)->isString()->isRequired(); //String contendo ano e mês de expiração do cartão. YYYY-MM
-                $validate->set('PaymentMethodCreditCard.Card.cvv', $charge['PaymentMethodCreditCard']['Card']['cvv'])->maxLength(4)->isString()->isRequired(); //Código de segurança.
+            if (count($charge['PaymentMethodCreditCard'] ?? null)) {
+                $validate->set('PaymentMethodCreditCard.Card.myId', ($charge['PaymentMethodCreditCard']['Card']['myId'] ?? null))->maxLength(255)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
+                $validate->set('PaymentMethodCreditCard.Card.number', ($charge['PaymentMethodCreditCard']['Card']['number'] ?? null))->maxLength(30)->isString()->isRequired(); //Número do cartão.
+                $validate->set('PaymentMethodCreditCard.Card.holder', ($charge['PaymentMethodCreditCard']['Card']['holder'] ?? null))->maxLength(30)->isString()->isRequired(); //Nome do portador.
+                $validate->set('PaymentMethodCreditCard.Card.expiresAt', ($charge['PaymentMethodCreditCard']['Card']['expiresAt'] ?? null))->maxLength(7)->isString()->isRequired(); //String contendo ano e mês de expiração do cartão. YYYY-MM
+                $validate->set('PaymentMethodCreditCard.Card.cvv', ($charge['PaymentMethodCreditCard']['Card']['cvv'] ?? null))->maxLength(4)->isString()->isRequired(); //Código de segurança.
 
-                $validate->set('PaymentMethodCreditCard.Antifraud.ip', $charge['PaymentMethodCreditCard']['Antifraud']['ip'])->maxLength(15)->isString()->isRequired(); //IPv4 do cliente.
-                $validate->set('PaymentMethodCreditCard.Antifraud.sessionId', $charge['PaymentMethodCreditCard']['Antifraud']['sessionId'])->maxLength(255)->isString()->isRequired(); //SessionId gerado.
+                $validate->set('PaymentMethodCreditCard.Antifraud.ip', ($charge['PaymentMethodCreditCard']['Antifraud']['ip'] ?? null))->maxLength(15)->isString()->isRequired(); //IPv4 do cliente.
+                $validate->set('PaymentMethodCreditCard.Antifraud.sessionId', ($charge['PaymentMethodCreditCard']['Antifraud']['sessionId'] ?? null))->maxLength(255)->isString()->isRequired(); //SessionId gerado.
 
-                $validate->set('PaymentMethodCreditCard.Link.minInstallment', $charge['PaymentMethodCreditCard']['Link']['minInstallment'])->maxLength(11)->isInteger(); //Mínimo de vezes que pode ser parcelado.
-                $validate->set('PaymentMethodCreditCard.Link.maxInstallment', $charge['PaymentMethodCreditCard']['Link']['maxInstallment'])->maxLength(11)->isInteger()->isRequired(); //Máximo de vezes que pode ser parcelado.
+                $validate->set('PaymentMethodCreditCard.Link.minInstallment', ($charge['PaymentMethodCreditCard']['Link']['minInstallment'] ?? null))->maxLength(11)->isInteger(); //Mínimo de vezes que pode ser parcelado.
+                $validate->set('PaymentMethodCreditCard.Link.maxInstallment', ($charge['PaymentMethodCreditCard']['Link']['maxInstallment'] ?? null))->maxLength(11)->isInteger()->isRequired(); //Máximo de vezes que pode ser parcelado.
 
-                $validate->set('PaymentMethodCreditCard.cardOperatorId', $charge['PaymentMethodCreditCard']['cardOperatorId'])->maxLength(30)->isString(); //Operadora, caso não informado será utilizada a ordem de prioridade definida no sistema.
-                $validate->set('PaymentMethodCreditCard.preAuthorize', $charge['PaymentMethodCreditCard']['preAuthorize'])->isBoolean(); //Caso enviado como true a transação não será capturada automaticamente na operadora.
-                $validate->set('PaymentMethodCreditCard.qtdInstallments', $charge['PaymentMethodCreditCard']['qtdInstallments'])->maxLength(11)->isInteger(); //Caso enviado como true a transação não será capturada automaticamente na operadora.
+                $validate->set('PaymentMethodCreditCard.cardOperatorId', ($charge['PaymentMethodCreditCard']['cardOperatorId'] ?? null))->maxLength(30)->isString(); //Operadora, caso não informado será utilizada a ordem de prioridade definida no sistema.
+                $validate->set('PaymentMethodCreditCard.preAuthorize', ($charge['PaymentMethodCreditCard']['preAuthorize'] ?? null))->isBoolean(); //Caso enviado como true a transação não será capturada automaticamente na operadora.
+                $validate->set('PaymentMethodCreditCard.qtdInstallments', ($charge['PaymentMethodCreditCard']['qtdInstallments'] ?? null))->maxLength(11)->isInteger(); //Caso enviado como true a transação não será capturada automaticamente na operadora.
             }
 
-            if (count($charge['PaymentMethodBoleto'])) {
-                $validate->set('PaymentMethodBoleto.fine', $charge['PaymentMethodBoleto']['fine'])->maxLength(11)->isInteger(); //Percentual de multa, com dois decimais sem o separador.
-                $validate->set('PaymentMethodBoleto.interest', $charge['PaymentMethodBoleto']['interest'])->maxLength(11)->isInteger(); //Percentual de juros, com dois decimais sem o separador.
-                $validate->set('PaymentMethodBoleto.instructions', $charge['PaymentMethodBoleto']['instructions'])->maxLength(255)->isString(); //Instruções do boleto.
-                $validate->set('PaymentMethodBoleto.deadlineDays', $charge['PaymentMethodBoleto']['deadlineDays'])->maxLength(11)->isInteger(); //Quantidade de dias que o boleto pode ser pago após o vencimento.
+            if (count($charge['PaymentMethodBoleto'] ?? null)) {
+                $validate->set('PaymentMethodBoleto.fine', ($charge['PaymentMethodBoleto']['fine'] ?? null))->maxLength(11)->isInteger(); //Percentual de multa, com dois decimais sem o separador.
+                $validate->set('PaymentMethodBoleto.interest', ($charge['PaymentMethodBoleto']['interest'] ?? null))->maxLength(11)->isInteger(); //Percentual de juros, com dois decimais sem o separador.
+                $validate->set('PaymentMethodBoleto.instructions', ($charge['PaymentMethodBoleto']['instructions'] ?? null))->maxLength(255)->isString(); //Instruções do boleto.
+                $validate->set('PaymentMethodBoleto.deadlineDays', ($charge['PaymentMethodBoleto']['deadlineDays'] ?? null))->maxLength(11)->isInteger(); //Quantidade de dias que o boleto pode ser pago após o vencimento.
 
-                $validate->set('PaymentMethodBoleto.Discount.qtdDaysBeforePayDay', $charge['PaymentMethodBoleto']['Discount']['qtdDaysBeforePayDay'])->maxLength(11)->isInteger()->isRequired(); //Quantidade de dias que o desconto será válido. Valores válidos de 0 a 20.
-                $validate->set('PaymentMethodBoleto.Discount.type', $charge['PaymentMethodBoleto']['Discount']['type'])->maxLength(255)->isString()->isRequired(); //Define o tipo de desconto [percent|fixed]
-                $validate->set('PaymentMethodBoleto.Discount.value', $charge['PaymentMethodBoleto']['Discount']['value'])->maxLength(11)->isInteger()->isRequired(); //Valor do desconto em centavos.
+                $validate->set('PaymentMethodBoleto.Discount.qtdDaysBeforePayDay', ($charge['PaymentMethodBoleto']['Discount']['qtdDaysBeforePayDay'] ?? null))->maxLength(11)->isInteger()->isRequired(); //Quantidade de dias que o desconto será válido. Valores válidos de 0 a 20.
+                $validate->set('PaymentMethodBoleto.Discount.type', ($charge['PaymentMethodBoleto']['Discount']['type'] ?? null))->maxLength(255)->isString()->isRequired(); //Define o tipo de desconto [percent|fixed]
+                $validate->set('PaymentMethodBoleto.Discount.value', ($charge['PaymentMethodBoleto']['Discount']['value'] ?? null))->maxLength(11)->isInteger()->isRequired(); //Valor do desconto em centavos.
             }
 
-            if (count($charge['PaymentMethodPix'])) {
-                $validate->set('PaymentMethodPix.fine', $charge['PaymentMethodPix']['fine'])->maxLength(11)->isInteger(); //Percentual de multa, com dois decimais sem o separador.
-                $validate->set('PaymentMethodPix.interest', $charge['PaymentMethodPix']['interest'])->maxLength(11)->isInteger(); //Percentual de juros, com dois decimais sem o separador.
-                $validate->set('PaymentMethodPix.instructions', $charge['PaymentMethodPix']['instructions'])->maxLength(255)->isString(); //Instruções do QR Code Pix.
+            if (count($charge['PaymentMethodPix'] ?? null)) {
+                $validate->set('PaymentMethodPix.fine', ($charge['PaymentMethodPix']['fine'] ?? null))->maxLength(11)->isInteger(); //Percentual de multa, com dois decimais sem o separador.
+                $validate->set('PaymentMethodPix.interest', ($charge['PaymentMethodPix']['interest'] ?? null))->maxLength(11)->isInteger(); //Percentual de juros, com dois decimais sem o separador.
+                $validate->set('PaymentMethodPix.instructions', ($charge['PaymentMethodPix']['instructions'] ?? null))->maxLength(255)->isString(); //Instruções do QR Code Pix.
 
-                $validate->set('PaymentMethodPix.Deadline.type', $charge['PaymentMethodPix']['Deadline']['type'])->maxLength(255)->isString(); //Tipo da expiração do QR Code. [days]
-                $validate->set('PaymentMethodPix.Deadline.value', $charge['PaymentMethodPix']['Deadline']['value'])->maxLength(11)->isInteger(); //Valor da expiração do QR Code (em dias ou minutos).
+                $validate->set('PaymentMethodPix.Deadline.type', ($charge['PaymentMethodPix']['Deadline']['type'] ?? null))->maxLength(255)->isString(); //Tipo da expiração do QR Code. [days]
+                $validate->set('PaymentMethodPix.Deadline.value', ($charge['PaymentMethodPix']['Deadline']['value'] ?? null))->maxLength(11)->isInteger(); //Valor da expiração do QR Code (em dias ou minutos).
 
-                $validate->set('PaymentMethodPix.Discount.qtdDaysBeforePayDay', $charge['PaymentMethodPix']['Discount']['qtdDaysBeforePayDay'])->maxLength(11)->isInteger()->isRequired(); //Quantidade de dias que o desconto será válido. Valores válidos de 0 a 20.
-                $validate->set('PaymentMethodPix.Discount.type', $charge['PaymentMethodPix']['Discount']['type'])->maxLength(255)->isString()->isRequired(); //Define o tipo de desconto [percent|fixed]
-                $validate->set('PaymentMethodPix.Discount.value', $charge['PaymentMethodPix']['Discount']['value'])->maxLength(11)->isInteger()->isRequired(); //Valor do desconto em centavos.
+                $validate->set('PaymentMethodPix.Discount.qtdDaysBeforePayDay', ($charge['PaymentMethodPix']['Discount']['qtdDaysBeforePayDay'] ?? null))->maxLength(11)->isInteger()->isRequired(); //Quantidade de dias que o desconto será válido. Valores válidos de 0 a 20.
+                $validate->set('PaymentMethodPix.Discount.type', ($charge['PaymentMethodPix']['Discount']['type'] ?? null))->maxLength(255)->isString()->isRequired(); //Define o tipo de desconto [percent|fixed]
+                $validate->set('PaymentMethodPix.Discount.value', ($charge['PaymentMethodPix']['Discount']['value'] ?? null))->maxLength(11)->isInteger()->isRequired(); //Valor do desconto em centavos.
             }
 
-            if (count($charge['InvoiceConfig'])) {
-                $validate->set('InvoiceConfig.description', $charge['InvoiceConfig']['description'])->isString()->isRequired(); //Descrição da nota fiscal.
-                $validate->set('InvoiceConfig.type', $charge['InvoiceConfig']['type'])->maxLength(255)->isString()->isRequired(); //Define se a emissão será uma por transação ou uma para a assinatura toda. [onePerTransaction]
-                $validate->set('InvoiceConfig.createOn', $charge['InvoiceConfig']['createOn'])->maxLength(255)->isString()->isRequired(); //Define o momento que a nota fiscal será gerada.
-                $validate->set('InvoiceConfig.qtdDaysBeforePayDay', $charge['InvoiceConfig']['qtdDaysBeforePayDay'])->maxLength(11)->isInteger(); //Quantidade de dias a ser considerado se o createOn for daysBeforePayDay.
-                $validate->set('InvoiceConfig.galaxPaySubAccountId', $charge['InvoiceConfig']['galaxPaySubAccountId'])->maxLength(11)->isInteger(); //GalaxPayAccount.id - Conta Galax Pay referente a nota fiscal. Utilizada quando os pagamentos são realizados para uma conta matriz e a nota tem que ser emitida para uma filial.
+            if (count($charge['InvoiceConfig'] ?? null)) {
+                $validate->set('InvoiceConfig.description', ($charge['InvoiceConfig']['description'] ?? null))->isString()->isRequired(); //Descrição da nota fiscal.
+                $validate->set('InvoiceConfig.type', ($charge['InvoiceConfig']['type'] ?? null))->maxLength(255)->isString()->isRequired(); //Define se a emissão será uma por transação ou uma para a assinatura toda. [onePerTransaction]
+                $validate->set('InvoiceConfig.createOn', ($charge['InvoiceConfig']['createOn'] ?? null))->maxLength(255)->isString()->isRequired(); //Define o momento que a nota fiscal será gerada.
+                $validate->set('InvoiceConfig.qtdDaysBeforePayDay', ($charge['InvoiceConfig']['qtdDaysBeforePayDay'] ?? null))->maxLength(11)->isInteger(); //Quantidade de dias a ser considerado se o createOn for daysBeforePayDay.
+                $validate->set('InvoiceConfig.galaxPaySubAccountId', ($charge['InvoiceConfig']['galaxPaySubAccountId'] ?? null))->maxLength(11)->isInteger(); //GalaxPayAccount.id - Conta Galax Pay referente a nota fiscal. Utilizada quando os pagamentos são realizados para uma conta matriz e a nota tem que ser emitida para uma filial.
             }
 
             $validate->validate();

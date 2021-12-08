@@ -186,26 +186,31 @@ class Clientes extends Auth
         try {
             $validate = new Validation();
 
-            $validate->set('myId', $customer['myId'])->maxLength(255)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
-            $validate->set('name', $customer['name'])->maxLength(255)->isString()->isRequired(); //Nome ou razão social do cliente.
-            $validate->set('document', $customer['document'])->maxLength(14)->isString()->isRequired(); //CPF OU CNPJ do cliente. Apenas números.
-            $validate->set('invoiceHoldIss', $customer['invoiceHoldIss'])->isBoolean(); //Se reterá ISS na nota fiscal ou não.
-            $validate->set('municipalDocument', $customer['municipalDocument'])->maxLength(255)->isString(); //Inscrição municipal do cliente.
+            $validate->set('myId', ($customer['myId'] ?? null))->maxLength(255)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
+            $validate->set('name', ($customer['name'] ?? null))->maxLength(255)->isString()->isRequired(); //Nome ou razão social do cliente.
+            $validate->set('document', ($customer['document'] ?? null))->maxLength(14)->isString()->isRequired(); //CPF OU CNPJ do cliente. Apenas números.
+            $validate->set('invoiceHoldIss', ($customer['invoiceHoldIss'] ?? null))->isBoolean(); //Se reterá ISS na nota fiscal ou não.
+            $validate->set('municipalDocument', ($customer['municipalDocument'] ?? null))->maxLength(255)->isString(); //Inscrição municipal do cliente.
 
-            $validate->set('Address.zipCode', $customer['Address']['zipCode'])->maxLength(8)->isString()->isRequired(); //CEP. Informe apenas números.
-            $validate->set('Address.street', $customer['Address']['street'])->maxLength(255)->isString()->isRequired(); //Logradouro.
-            $validate->set('Address.number', $customer['Address']['number'])->maxLength(255)->isString()->isRequired(); //Número.
-            $validate->set('Address.complement', $customer['Address']['complement'])->maxLength(255)->isString(); //Complemento.
-            $validate->set('Address.neighborhood', $customer['Address']['neighborhood'])->maxLength(255)->isString()->isRequired(); //Bairro.
-            $validate->set('Address.city', $customer['Address']['city'])->maxLength(255)->isString()->isRequired(); //Cidade.
-            $validate->set('Address.state', $customer['Address']['state'])->maxLength(2)->isString()->isRequired(); //Estado.
+            $validate->set('Address.zipCode', ($customer['Address']['zipCode'] ?? null))->maxLength(8)->isString()->isRequired(); //CEP. Informe apenas números.
+            $validate->set('Address.street', ($customer['Address']['street'] ?? null))->maxLength(255)->isString()->isRequired(); //Logradouro.
+            $validate->set('Address.number', ($customer['Address']['number'] ?? null))->maxLength(255)->isString()->isRequired(); //Número.
+            $validate->set('Address.complement', ($customer['Address']['complement'] ?? null))->maxLength(255)->isString(); //Complemento.
+            $validate->set('Address.neighborhood', ($customer['Address']['neighborhood'] ?? null))->maxLength(255)->isString()->isRequired(); //Bairro.
+            $validate->set('Address.city', ($customer['Address']['city'] ?? null))->maxLength(255)->isString()->isRequired(); //Cidade.
+            $validate->set('Address.state', ($customer['Address']['state'] ?? null))->maxLength(2)->isString()->isRequired(); //Estado.
 
-            foreach ($customer['emails'] as $k => $email) {
-                $validate->set('emails', $email)->maxLength(255)->isString()->isRequired(); //Emails do cliente.
+            $validate->set('Emails', ($customer['emails'] ?? null))->isArray()->isRequired();
+            if (count($customer['emails'] ?? null)) {
+                foreach ($customer['emails'] as $k => $email) {
+                    $validate->set('emails', $email)->maxLength(255)->isString()->isRequired(); //Emails do cliente.
+                }
             }
 
-            foreach ($customer['phones'] as $k => $phone) {
-                $validate->set('phones', $phone)->maxLength(11)->isInteger(); //Telefones do cliente.
+            if (count($customer['phones'] ?? null)) {
+                foreach ($customer['phones'] as $k => $phone) {
+                    $validate->set('phones', $phone)->maxLength(11)->isInteger(); //Telefones do cliente.
+                }
             }
 
             $validate->validate();

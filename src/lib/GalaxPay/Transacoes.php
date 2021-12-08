@@ -110,11 +110,11 @@ class Transacoes extends Auth
         try {
             $validate = new Validation();
 
-            $validate->set('myId', $transaction['myId'])->maxLength(255)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
-            $validate->set('value', $transaction['value'])->maxLength(11)->isInteger(); //Preço em centavos.
-            $validate->set('payday', $transaction['payday'])->maxLength(10)->isString(); //Data de vencimento do pagamento.
-            $validate->set('payedOutsideGalaxPay', $transaction['payedOutsideGalaxPay'])->isBoolean(); //Define se a cobrança foi paga fora do sistema do Galax Pay.
-            $validate->set('additionalInfo', $transaction['additionalInfo'])->isString(); //Texto para informações adicionais sobre a transação.
+            $validate->set('myId', ($transaction['myId'] ?? null))->maxLength(255)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
+            $validate->set('value', ($transaction['value'] ?? null))->maxLength(11)->isInteger(); //Preço em centavos.
+            $validate->set('payday', ($transaction['payday'] ?? null))->maxLength(10)->isString(); //Data de vencimento do pagamento.
+            $validate->set('payedOutsideGalaxPay', ($transaction['payedOutsideGalaxPay'] ?? null))->isBoolean(); //Define se a cobrança foi paga fora do sistema do Galax Pay.
+            $validate->set('additionalInfo', ($transaction['additionalInfo'] ?? null))->isString(); //Texto para informações adicionais sobre a transação.
 
             $validate->validate();
         } catch (Exception $ex) {

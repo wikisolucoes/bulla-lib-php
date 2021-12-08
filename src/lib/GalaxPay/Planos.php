@@ -186,15 +186,18 @@ class Planos extends Auth
         try {
             $validate = new Validation();
 
-            $validate->set('myId', $plan['myId'])->maxLength(255)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
-            $validate->set('name', $plan['name'])->maxLength(255)->isString()->isRequired(); //Nome do plano.
-            $validate->set('periodicity', $plan['periodicity'])->maxLength(255)->isString()->isRequired(); //Periodicidade do plano.
-            $validate->set('quantity', $plan['quantity'])->maxLength(3)->isInteger()->isRequired(); //Para indeterminada envie 0.
-            $validate->set('additionalInfo', $plan['additionalInfo'])->isString(); //Texto livre dedicado a informações adicionais internas.
+            $validate->set('myId', ($plan['myId'] ?? null))->maxLength(255)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
+            $validate->set('name', ($plan['name'] ?? null))->maxLength(255)->isString()->isRequired(); //Nome do plano.
+            $validate->set('periodicity', ($plan['periodicity'] ?? null))->maxLength(255)->isString()->isRequired(); //Periodicidade do plano.
+            $validate->set('quantity', ($plan['quantity'] ?? null))->maxLength(3)->isInteger()->isRequired(); //Para indeterminada envie 0.
+            $validate->set('additionalInfo', ($plan['additionalInfo'] ?? null))->isString(); //Texto livre dedicado a informações adicionais internas.
 
-            foreach ($plan['prices'] as $k => $price) {
-                $validate->set('PlanPrices.payment', $price['payment'])->maxLength(30)->isString()->isRequired(); //PaymentMethod.id => Id do pagamento
-                $validate->set('PlanPrices.value', $price['value'])->maxLength(11)->isInteger()->isRequired(); //Preço em centavos.
+            $validate->set('PlanPrices', ($plan['prices'] ?? null))->isArray()->isRequired();
+            if (count($plan['prices'] ?? null)) {
+                foreach ($plan['prices'] as $k => $price) {
+                    $validate->set('PlanPrices.payment', ($price['payment'] ?? null))->maxLength(30)->isString()->isRequired(); //PaymentMethod.id => Id do pagamento
+                    $validate->set('PlanPrices.value', ($price['value'] ?? null))->maxLength(11)->isInteger()->isRequired(); //Preço em centavos.
+                }
             }
 
             $validate->validate();

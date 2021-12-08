@@ -111,11 +111,11 @@ class Cartoes extends Auth
         try {
             $validate = new Validation();
 
-            $validate->set('myId', $card['myId'])->maxLength(255)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
-            $validate->set('number', $card['number'])->maxLength(30)->isString()->isRequired(); //Número do cartão.
-            $validate->set('holder', $card['holder'])->maxLength(30)->isString()->isRequired(); //Nome do portador.
-            $validate->set('expiresAt', $card['expiresAt'])->maxLength(7)->isString()->isRequired(); //String contendo ano e mês de expiração do cartão. YYYY-MM
-            $validate->set('cvv', $card['cvv'])->maxLength(4)->isString()->isRequired(); //Código de segurança.
+            $validate->set('myId', ($card['myId'] ?? null))->maxLength(255)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
+            $validate->set('number', ($card['number'] ?? null))->maxLength(30)->isString()->isRequired(); //Número do cartão.
+            $validate->set('holder', ($card['holder'] ?? null))->maxLength(30)->isString()->isRequired(); //Nome do portador.
+            $validate->set('expiresAt', ($card['expiresAt'] ?? null))->maxLength(7)->isString()->isRequired(); //String contendo ano e mês de expiração do cartão. YYYY-MM
+            $validate->set('cvv', ($card['cvv'] ?? null))->maxLength(4)->isString()->isRequired(); //Código de segurança.
 
             $validate->validate();
         } catch (Exception $ex) {
