@@ -2,7 +2,7 @@
 
 namespace Bulla\lib\GalaxPay;
 
-use Curl\Curl;
+use \Curl\Curl;
 use \Exception;
 use \stdClass;
 
