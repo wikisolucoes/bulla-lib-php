@@ -111,7 +111,7 @@ class Cartoes extends Auth
         try {
             $validate = new Validation();
 
-            $validate->set('myId', ($card['myId'] ?? null))->maxLength(255)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
+            $validate->set('myId', ($card['myId'] ?? null))->maxLength(255)->isString(); //Id referente no seu sistema, para salvar no Galax Pay.
             $validate->set('number', ($card['number'] ?? null))->maxLength(30)->isString()->isRequired(); //Número do cartão.
             $validate->set('holder', ($card['holder'] ?? null))->maxLength(30)->isString()->isRequired(); //Nome do portador.
             $validate->set('expiresAt', ($card['expiresAt'] ?? null))->maxLength(7)->isString()->isRequired(); //String contendo ano e mês de expiração do cartão. YYYY-MM

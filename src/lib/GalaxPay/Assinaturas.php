@@ -427,7 +427,7 @@ class Assinaturas extends Auth
             }
 
             if (count(($subscription['PaymentMethodCreditCard'] ?? []))) {
-                $validate->set('PaymentMethodCreditCard.Card.myId', ($subscription['PaymentMethodCreditCard']['Card']['myId'] ?? null))->maxLength(255)->isString()->isRequired(); //Id referente no seu sistema, para salvar no Galax Pay.
+                $validate->set('PaymentMethodCreditCard.Card.myId', ($subscription['PaymentMethodCreditCard']['Card']['myId'] ?? null))->maxLength(255)->isString(); //Id referente no seu sistema, para salvar no Galax Pay.
                 $validate->set('PaymentMethodCreditCard.Card.number', ($subscription['PaymentMethodCreditCard']['Card']['number'] ?? null))->maxLength(30)->isString()->isRequired(); //Número do cartão.
                 $validate->set('PaymentMethodCreditCard.Card.holder', ($subscription['PaymentMethodCreditCard']['Card']['holder'] ?? null))->maxLength(30)->isString()->isRequired(); //Nome do portador.
                 $validate->set('PaymentMethodCreditCard.Card.expiresAt', ($subscription['PaymentMethodCreditCard']['Card']['expiresAt'] ?? null))->maxLength(7)->isString()->isRequired(); //String contendo ano e mês de expiração do cartão. YYYY-MM
