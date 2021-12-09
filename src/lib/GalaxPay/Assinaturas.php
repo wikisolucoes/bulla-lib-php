@@ -446,9 +446,9 @@ class Assinaturas extends Auth
                 $validate->set('PaymentMethodBoleto.instructions', ($subscription['PaymentMethodBoleto']['instructions'] ?? null))->maxLength(255)->isString(); //Instruções do boleto.
                 $validate->set('PaymentMethodBoleto.deadlineDays', ($subscription['PaymentMethodBoleto']['deadlineDays'] ?? null))->maxLength(11)->isInteger(); //Quantidade de dias que o boleto pode ser pago após o vencimento.
 
-                $validate->set('PaymentMethodBoleto.Discount.qtdDaysBeforePayDay', ($subscription['PaymentMethodBoleto']['Discount']['qtdDaysBeforePayDay'] ?? null))->maxLength(11)->isInteger()->isRequired(); //Quantidade de dias que o desconto será válido. Valores válidos de 0 a 20.
-                $validate->set('PaymentMethodBoleto.Discount.type', ($subscription['PaymentMethodBoleto']['Discount']['type'] ?? null))->maxLength(255)->isString()->isRequired(); //Define o tipo de desconto [percent|fixed]
-                $validate->set('PaymentMethodBoleto.Discount.value', ($subscription['PaymentMethodBoleto']['Discount']['value'] ?? null))->maxLength(11)->isInteger()->isRequired(); //Valor do desconto em centavos.
+                $validate->set('PaymentMethodBoleto.Discount.qtdDaysBeforePayDay', ($subscription['PaymentMethodBoleto']['Discount']['qtdDaysBeforePayDay'] ?? null))->maxLength(11)->isInteger(); //Quantidade de dias que o desconto será válido. Valores válidos de 0 a 20.
+                $validate->set('PaymentMethodBoleto.Discount.type', ($subscription['PaymentMethodBoleto']['Discount']['type'] ?? null))->maxLength(255)->isString(); //Define o tipo de desconto [percent|fixed]
+                $validate->set('PaymentMethodBoleto.Discount.value', ($subscription['PaymentMethodBoleto']['Discount']['value'] ?? null))->maxLength(11)->isInteger(); //Valor do desconto em centavos.
             }
 
             if (count(($subscription['PaymentMethodPix'] ?? []))) {
@@ -459,9 +459,9 @@ class Assinaturas extends Auth
                 $validate->set('PaymentMethodPix.Deadline.type', ($subscription['PaymentMethodPix']['Deadline']['type'] ?? null))->maxLength(255)->isString(); //Tipo da expiração do QR Code. [days]
                 $validate->set('PaymentMethodPix.Deadline.value', ($subscription['PaymentMethodPix']['Deadline']['value'] ?? null))->maxLength(11)->isInteger(); //Valor da expiração do QR Code (em dias ou minutos).
 
-                $validate->set('PaymentMethodPix.Discount.qtdDaysBeforePayDay', ($subscription['PaymentMethodPix']['Discount']['qtdDaysBeforePayDay'] ?? null))->maxLength(11)->isInteger()->isRequired(); //Quantidade de dias que o desconto será válido. Valores válidos de 0 a 20.
-                $validate->set('PaymentMethodPix.Discount.type', ($subscription['PaymentMethodPix']['Discount']['type'] ?? null))->maxLength(255)->isString()->isRequired(); //Define o tipo de desconto [percent|fixed]
-                $validate->set('PaymentMethodPix.Discount.value', ($subscription['PaymentMethodPix']['Discount']['value'] ?? null))->maxLength(11)->isInteger()->isRequired(); //Valor do desconto em centavos.
+                $validate->set('PaymentMethodPix.Discount.qtdDaysBeforePayDay', ($subscription['PaymentMethodPix']['Discount']['qtdDaysBeforePayDay'] ?? null))->maxLength(11)->isInteger(); //Quantidade de dias que o desconto será válido. Valores válidos de 0 a 20.
+                $validate->set('PaymentMethodPix.Discount.type', ($subscription['PaymentMethodPix']['Discount']['type'] ?? null))->maxLength(255)->isString(); //Define o tipo de desconto [percent|fixed]
+                $validate->set('PaymentMethodPix.Discount.value', ($subscription['PaymentMethodPix']['Discount']['value'] ?? null))->maxLength(11)->isInteger(); //Valor do desconto em centavos.
             }
 
             if (count(($subscription['InvoiceConfig'] ?? []))) {
