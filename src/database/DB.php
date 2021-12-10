@@ -44,12 +44,12 @@ class DB
      */
     public function __construct()
     {
-        $db_port = $_ENV['DB_PORT'];
-        $db_hostname = $_ENV['DB_HOST'];
-        $db_database = $_ENV['DB_DATABASE'];
-        $db_username = $_ENV['DB_USERNAME'];
-        $db_password = $_ENV['DB_PASSWORD'];
-        $this->log = new Log($_ENV['DIR_LOG']);
+        $db_port = getenv('DB_PORT') ?? $_ENV['DB_PORT'];
+        $db_hostname = getenv('DB_HOST') ?? $_ENV['DB_HOST'];
+        $db_database = getenv('DB_DATABASE') ?? $_ENV['DB_DATABASE'];
+        $db_username = getenv('DB_USERNAME') ?? $_ENV['DB_USERNAME'];
+        $db_password = getenv('DB_PASSWORD') ?? $_ENV['DB_PASSWORD'];
+        $this->log = new Log(getenv('DIR_LOG') ?? $_ENV['DIR_LOG']);
         $this->Connect($db_hostname, $db_database, $db_username, $db_password, $db_port);
         $this->parameters = [];
     }
