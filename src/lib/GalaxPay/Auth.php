@@ -46,9 +46,9 @@ class Auth
 
     public function __construct()
     {
-        $this->galaxID = $_ENV['GALAXPAY_API_ID'];
-        $this->galaxHASH = $_ENV['GALAXPAY_API_HASH'];
-        $this->galaxHOST = $_ENV['GALAXPAY_API_HOST'];
+        $this->galaxID = getenv('GALAXPAY_API_ID') ?? $_ENV['GALAXPAY_API_ID'];
+        $this->galaxHASH = getenv('GALAXPAY_API_HASH') ?? $_ENV['GALAXPAY_API_HASH'];
+        $this->galaxHOST = getenv('GALAXPAY_API_HOST') ?? $_ENV['GALAXPAY_API_HOST'];
     }
 
     /**
