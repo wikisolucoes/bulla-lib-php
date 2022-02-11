@@ -32,7 +32,7 @@ class CadRegrasPreco
             unset($filters['cod_barra']);
 
             if(is_array($filters['idTipoAliqIcms'])) {
-                $where = implode(" OR idTipoAliqIcms = ", $filters['idTipoAliqIcms'])
+                $where = implode(" OR idTipoAliqIcms = ", $filters['idTipoAliqIcms']);
                 array_push($where, "(idTipoAliqIcms = {$where})");
                 unset($filters['idTipoAliqIcms']);
             } else {
