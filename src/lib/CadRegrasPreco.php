@@ -31,8 +31,14 @@ class CadRegrasPreco
             array_push($where, "cod_barra = '" . $filters['cod_barra'] . "'");
             unset($filters['cod_barra']);
 
-            array_push($where, "idTipoAliqIcms = " . $filters['idTipoAliqIcms']);
-            unset($filters['idTipoAliqIcms']);
+            if(is_array($filters['idTipoAliqIcms'])) {
+                $where = implode(" OR idTipoAliqIcms = ", $filters['idTipoAliqIcms'])
+                array_push($where, "(idTipoAliqIcms = {$where})");
+                unset($filters['idTipoAliqIcms']);
+            } else {
+                array_push($where, "idTipoAliqIcms = " . $filters['idTipoAliqIcms']);
+                unset($filters['idTipoAliqIcms']);
+            }
 
             foreach ($filters as $name => $value) {
                 if (!is_null($value)) {
@@ -47,7 +53,9 @@ class CadRegrasPreco
             //Output::print_ln("RESULTADO:");
             //Output::print_array($rows);
 
-            return $rows;
+            $regra = $this->sort($rows);
+
+            return $regra;
         } catch (Exception $ex) {
             //Output::print_ln(nl2br($ex->getMessage()), true);
             throw new Exception($ex->getMessage());
@@ -98,6 +106,35 @@ class CadRegrasPreco
             $validate->set('Fornecedor de Preço', (isset($filters['idProduto']) ? $filters['idProduto'] : null))->maxLength(11)->isInteger();
 
             $validate->validate();
+        } catch (Exception $ex) {
+            throw new Exception($ex->getMessage());
+        }
+    }
+
+    private function sort($rows = [])
+    {
+        try {
+            $filters = array_filter($this->filters, function ($value) {return !is_null($value) && $value !== '';});
+            $keys = [];
+            foreach ($rows as $row) {
+                $match = 0;
+
+                foreach ($filters as $filterName => $filterValue) { //Para cada filtro
+                    if ($row[$filterName] == $filterValue) { //Se registro = filtro
+                        $match++; //Registra ocorrencia
+                    }
+                }
+                //Add array keys o ID do registro e a quantidade de ocorrencias
+                $keys[$row['id']] = $match;
+            }
+
+            arsort($keys); //Ordenar array em ordem descrescente, mantendo o maior numero de ocorrencias primeiro
+
+            //Output::print_ln("ORDENADO:");
+            //Output::print_array($keys);
+
+            //Retorna a chave do primeiro elemento, ou seja, regra com mais ocorrencias nos filtros
+            return array_key_first($keys);
         } catch (Exception $ex) {
             throw new Exception($ex->getMessage());
         }
