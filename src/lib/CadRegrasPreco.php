@@ -53,9 +53,13 @@ class CadRegrasPreco
             //Output::print_ln("RESULTADO:");
             //Output::print_array($rows);
 
-            $regra = $this->sort($rows);
+            $idRegraPreco = $this->sort($rows);
 
-            return $regra;
+            if (!$idRegraPreco) {
+                throw new Exception('Regra de Preço não encontrada!');
+            }
+
+            return $this->getRegraById($idRegraPreco);
         } catch (Exception $ex) {
             //Output::print_ln(nl2br($ex->getMessage()), true);
             throw new Exception($ex->getMessage());
