@@ -87,7 +87,13 @@ class CadRegrasPreco
 
     public function setFilter($name = '', $value = '')
     {
-        if (!strlen($name) or !strlen($value)) {
+        if (!strlen($name)) {
+            throw new Exception('Informe um filtro válido!');
+        }
+        if (is_array($value) && !count($value)) {
+            throw new Exception('Informe um filtro válido!');
+        }
+        if (!is_array($value) && !strlen($value)) {
             throw new Exception('Informe um filtro válido!');
         }
 
@@ -104,10 +110,17 @@ class CadRegrasPreco
             $validate = new Validation();
 
             $validate->set('Código de Barras', (isset($filters['cod_barra']) ? $filters['cod_barra'] : null))->maxLength(255)->isString()->isRequired();
-            $validate->set('Tipo Aliquota ICMS', (isset($filters['idTipoAliqIcms']) ? $filters['idTipoAliqIcms'] : null))->maxLength(11)->isInteger()->isRequired();
             $validate->set('ID Produto', (isset($filters['idProduto']) ? $filters['idProduto'] : null))->maxLength(11)->isInteger();
             $validate->set('Lista Comercialização', (isset($filters['idListaComerc']) ? $filters['idListaComerc'] : null))->maxLength(11)->isInteger();
             $validate->set('Fornecedor de Preço', (isset($filters['idProduto']) ? $filters['idProduto'] : null))->maxLength(11)->isInteger();
+
+            if(isset($filters['idTipoAliqIcms']) && is_array($filters['idTipoAliqIcms'])) {
+                foreach($filters['idTipoAliqIcms'] as $idTipoAliqIcms) {
+                    $validate->set('Tipo Aliquota ICMS', $idTipoAliqIcms)->maxLength(11)->isInteger()->isRequired();
+                }
+            } else if(isset($filters['idTipoAliqIcms'])) {
+                $validate->set('Tipo Aliquota ICMS', (isset($filters['idTipoAliqIcms']) ? $filters['idTipoAliqIcms'] : null))->maxLength(11)->isInteger()->isRequired();
+            }
 
             $validate->validate();
         } catch (Exception $ex) {
