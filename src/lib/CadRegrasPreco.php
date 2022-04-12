@@ -31,7 +31,7 @@ class CadRegrasPreco
             array_push($where, "cod_barra = '" . $filters['cod_barra'] . "'");
             unset($filters['cod_barra']);
 
-            if(is_array($filters['idTipoAliqIcms'])) {
+            if (is_array($filters['idTipoAliqIcms'])) {
                 $aux = implode(" OR idTipoAliqIcms = ", $filters['idTipoAliqIcms']);
                 array_push($where, "(idTipoAliqIcms = {$aux})");
                 unset($filters['idTipoAliqIcms']);
@@ -53,7 +53,12 @@ class CadRegrasPreco
             //Output::print_ln("RESULTADO:");
             //Output::print_array($rows);
 
-            $idRegraPreco = $this->sort($rows);
+            $idRegraPreco = false;
+            if (count($rows) == 1) {
+                $idRegraPreco = $rows[0]['id'];
+            } else if (count($rows) > 1) {
+                $idRegraPreco = $this->sort($rows);
+            }
 
             if (!$idRegraPreco) {
                 throw new Exception('Regra de Preço não encontrada!');
@@ -114,11 +119,11 @@ class CadRegrasPreco
             $validate->set('Lista Comercialização', (isset($filters['idListaComerc']) ? $filters['idListaComerc'] : null))->maxLength(11)->isInteger();
             $validate->set('Fornecedor de Preço', (isset($filters['idProduto']) ? $filters['idProduto'] : null))->maxLength(11)->isInteger();
 
-            if(isset($filters['idTipoAliqIcms']) && is_array($filters['idTipoAliqIcms'])) {
-                foreach($filters['idTipoAliqIcms'] as $idTipoAliqIcms) {
+            if (isset($filters['idTipoAliqIcms']) && is_array($filters['idTipoAliqIcms'])) {
+                foreach ($filters['idTipoAliqIcms'] as $idTipoAliqIcms) {
                     $validate->set('Tipo Aliquota ICMS', $idTipoAliqIcms)->maxLength(11)->isInteger()->isRequired();
                 }
-            } else if(isset($filters['idTipoAliqIcms'])) {
+            } else if (isset($filters['idTipoAliqIcms'])) {
                 $validate->set('Tipo Aliquota ICMS', (isset($filters['idTipoAliqIcms']) ? $filters['idTipoAliqIcms'] : null))->maxLength(11)->isInteger()->isRequired();
             }
 
