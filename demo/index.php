@@ -1,3 +1,3 @@
 <?php
 
-require_once __DIR__ . '/galax_pay_clientes.php';
+require_once __DIR__ . '/figura_fiscal.php';
