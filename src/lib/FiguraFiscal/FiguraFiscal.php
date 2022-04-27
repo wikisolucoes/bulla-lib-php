@@ -50,7 +50,7 @@ class FiguraFiscal
         $response = $curl->response;
 
         if (isset($response->mensagem)) {
-            if ($response->mensagem == 'sucesso') {
+            if ($response->mensagem == 'sucesso' && !is_null($response->tributos)) {
                 return is_array($response->tributos) ? array_shift($response->tributos) : $response->tributos;
             } else {
                 throw new Exception($response->mensagem);
@@ -84,7 +84,41 @@ class FiguraFiscal
         $response = $curl->response;
 
         if (isset($response->mensagem)) {
-            if ($response->mensagem == 'sucesso') {
+            if ($response->mensagem == 'sucesso' && !is_null($response->tributos)) {
+                return is_array($response->tributos) ? array_shift($response->tributos) : $response->tributos;
+            } else {
+                throw new Exception($response->mensagem);
+            }
+        } else {
+            throw new Exception("Falha na consulta!");
+        }
+
+        if ($curl->error) {
+            throw new Exception("Falha na consulta! \n Error - {$curl->errorCode}: {$curl->errorMessage}");
+        }
+    }
+
+    /**
+     * [GET] Consulta Atualizações por Segmento
+     *
+     * Consulta Informações Tributárias que foram atualizadas por segmento
+     *
+     * @param string $date (DD-MM-AAAA)
+     */
+    public function atualizacoes(string $date): stdClass
+    {
+        $url = $this->URL . '/atualizacoes/' . $this->ID . '/' . $this->CNPJ . '/' . $this->TOKEN_API;
+
+        $curl = new Curl();
+        $curl->setHeader('Content-Type', 'application/json');
+        $curl->get($url, [
+            'date' => $date,
+        ]);
+
+        $response = $curl->response;
+
+        if (isset($response->mensagem)) {
+            if ($response->mensagem == 'sucesso' && !is_null($response->tributos)) {
                 return is_array($response->tributos) ? array_shift($response->tributos) : $response->tributos;
             } else {
                 throw new Exception($response->mensagem);
