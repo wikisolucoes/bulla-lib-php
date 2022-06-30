@@ -29,6 +29,72 @@ class FiguraFiscal
     }
 
     /**
+     * [GET] Consulta Atualizações De Produtos
+     *
+     * Consulta Informações Tributárias Alteradas Em Uma Determinada Data
+     *
+     * @param string $data
+     * @return array
+     */
+    public function consultaAtualizacoes(string $date): stdClass
+    {
+        $url = $this->URL . '/atualizacoes/' . $this->ID . '/' . $this->CNPJ . '/' . $this->TOKEN_API;
+
+        $curl = new Curl();
+        $curl->setHeader('Content-Type', 'application/json');
+        $curl->get($url, ['date' => $date]);
+
+        $response = $curl->response;
+
+        if (isset($response->mensagem)) {
+            if ($response->mensagem == 'sucesso' && (!empty($response->tributos) || !empty($response->produtos_troca_segmento))) {
+                return $response;
+            } else {
+                throw new Exception($response->mensagem);
+            }
+        } else {
+            throw new Exception("Falha na consulta!");
+        }
+
+        if ($curl->error) {
+            throw new Exception("Falha na consulta! \n Error - {$curl->errorCode}: {$curl->errorMessage}");
+        }
+    }
+
+    /**
+     * [GET] Consulta EAN Em Lote
+     *
+     * Consulta Informações Tributárias De Um Lote De Produtos
+     *
+     * @param array $data
+     * @return array
+     */
+    public function consultaEanLote(array $data): array
+    {
+        $url = $this->URL . '/revisao/' . $this->ID . '/' . $this->CNPJ . '/' . $this->TOKEN_API;
+
+        $curl = new Curl();
+        $curl->setHeader('Content-Type', 'application/json');
+        $curl->post($url, $data);
+
+        $response = $curl->response;
+
+        if (isset($response->mensagem)) {
+            if ($response->mensagem == 'sucesso' && !is_null($response->tributos)) {
+                return $response->tributos;
+            } else {
+                throw new Exception($response->mensagem);
+            }
+        } else {
+            throw new Exception("Falha na consulta!");
+        }
+
+        if ($curl->error) {
+            throw new Exception("Falha na consulta! \n Error - {$curl->errorCode}: {$curl->errorMessage}");
+        }
+    }
+
+    /**
      * [GET] Consulta EAN
      *
      * Consulta Informações Tributárias do Produto
